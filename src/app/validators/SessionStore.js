@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import Messages from '../constants/Messages';
 
 export default async (req, res, next) => {
   try {
@@ -12,6 +13,6 @@ export default async (req, res, next) => {
     await schema.validate(req.body, { abortEarly: false });
     return next();
   } catch (err) {
-    return res.status(400).json({ error: 'Erro nos dados informados.' });
+    return res.status(400).json({ error: Messages.MessageValidationFail });
   }
 };

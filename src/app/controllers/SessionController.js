@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User';
 import authConfig from '../../config/auth';
 
+import Messages from '../constants/Messages';
+
 class SessionController {
   async store(req, res) {
     const { email, password } = req.body;
@@ -9,10 +11,12 @@ class SessionController {
     const user = await User.findOne({ where: { email } });
 
     if (!user)
-      return res.status(401).json({ error: 'Usuário não encontrado.' });
+      return res.status(401).json({ error: Messages.MessagesUserNotFound });
 
     if (!(await user.checkPassword(password)))
-      return res.status(401).json({ error: 'Usuário ou senha inválidos.' });
+      return res
+        .status(401)
+        .json({ error: Messages.MessageUserOrPasswordIncorrets });
 
     const { id, name } = user;
 

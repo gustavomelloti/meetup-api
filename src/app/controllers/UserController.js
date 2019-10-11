@@ -1,11 +1,12 @@
 import User from '../models/User';
+import Messages from '../constants/Messages';
 
 class UserController {
   async store(req, res) {
     const userExists = await User.findOne({ where: { email: req.body.email } });
 
     if (userExists) {
-      return res.status(400).json({ error: 'Usuário já existe.' });
+      return res.status(400).json({ error: Messages.MessageUserExists });
     }
 
     const { id, name, email } = await User.create(req.body);
@@ -26,12 +27,12 @@ class UserController {
       const userExists = await User.findOne({ where: { email } });
 
       if (userExists) {
-        return res.status(400).json({ error: 'Usuário já existe.' });
+        return res.status(400).json({ error: Messages.MessageUserExists });
       }
     }
 
     if (oldPassword && !(await user.checkPassword(oldPassword))) {
-      return res.status(401).json({ error: 'Senha não bate.' });
+      return res.status(401).json({ error: Messages.MessagesPasswordNotValid });
     }
 
     const { id, name, email: userEmail } = await user.update(req.body);

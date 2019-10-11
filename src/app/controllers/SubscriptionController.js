@@ -7,6 +7,8 @@ import User from '../models/User';
 
 import Mail from '../../lib/Mail';
 
+import Messages from '../constants/Messages';
+
 class SubscriptionController {
   async index(req, res) {
     const subscriptions = await Subscription.findAll({
@@ -34,17 +36,16 @@ class SubscriptionController {
     const meetup = await Meetup.findByPk(req.params.meetupId);
 
     if (!meetup)
-      return res.status(400).json({ error: 'Meetup não localizado.' });
+      return res.status(400).json({ error: Messages.MessagesMeetupNotFound });
 
     if (meetup.user_id === req.userId)
       return res
         .status(400)
-        .json({ error: 'Você não pode realizar a inscrição em seus Meetups.' });
+        .json({ error: Messages.MessagesNotSubscribeInYoursMeetups });
 
     if (isBefore(meetup.date, new Date()))
       return res.status(400).json({
-        error:
-          'Você não pode realizar a inscrição em Meetups que já aconteceram.',
+        error: Messages.MessagesSubscribeInPastMeetup,
       });
 
     const checkSubscription = await Subscription.findOne({
@@ -57,7 +58,7 @@ class SubscriptionController {
     if (checkSubscription)
       return res
         .status(400)
-        .json({ error: 'Você já realizou a inscrição nesse Meetup.' });
+        .json({ error: Messages.MessagesSubscribeInMeetup });
 
     const checkDate = await Subscription.findOne({
       where: {
@@ -74,7 +75,7 @@ class SubscriptionController {
 
     if (checkDate) {
       return res.status(400).json({
-        error: 'Você já realizou a inscrição em um Meetup na mesma data.',
+        error: Messages.MessagesMeetupInSameDate,
       });
     }
 

@@ -5,6 +5,8 @@ import Meetup from '../models/Meetup';
 import File from '../models/File';
 import User from '../models/User';
 
+import Messages from '../constants/Messages';
+
 class MeetupController {
   async index(req, res) {
     const page = req.query.page || 1;
@@ -36,11 +38,12 @@ class MeetupController {
     if (isBefore(parseISO(req.body.date), new Date())) {
       return res
         .status(400)
-        .json({ error: 'Informe uma data maior do que a atual.' });
+        .json({ error: Messages.MessagesDateMoreThanCurrent });
     }
 
     const file = await File.findByPk(req.body.banner_id);
-    if (!file) return res.status(400).json({ error: 'Banner não encontrado.' });
+    if (!file)
+      return res.status(400).json({ error: Messages.MessagesBannerNotFound });
 
     const meetup = await Meetup.create({
       ...req.body,
@@ -54,28 +57,27 @@ class MeetupController {
     if (isBefore(parseISO(req.body.date), new Date())) {
       return res
         .status(400)
-        .json({ error: 'Informe uma data maior do que a atual.' });
+        .json({ error: Messages.MessagesDateMoreThanCurrent });
     }
 
     const file = await File.findByPk(req.body.banner_id);
-    if (!file) return res.status(400).json({ error: 'Banner não encontrado.' });
+    if (!file)
+      return res.status(400).json({ error: Messages.MessagesBannerNotFound });
 
     const meetup = await Meetup.findByPk(req.params.id);
 
     if (!meetup)
-      return res.status(400).json({ error: 'Meetup não encontrado.' });
+      return res.status(400).json({ error: Messages.MessagesMeetupNotFound });
 
     const { userId } = req;
 
     if (meetup.user_id !== userId)
       return res
         .status(400)
-        .json({ error: 'Você não possui permissão para deletar este Meetup.' });
+        .json({ error: Messages.MessagesMeetupWithoutPermissionToUpdate });
 
     if (isBefore(meetup.date, new Date()))
-      return res
-        .status(400)
-        .json({ error: 'Você não pode editar Meetups que já aconteceram.' });
+      return res.status(400).json({ error: Messages.MessagesUpdatePastMeetup });
 
     await meetup.update(req.body);
 
@@ -86,19 +88,17 @@ class MeetupController {
     const meetup = await Meetup.findByPk(req.params.id);
 
     if (!meetup)
-      return res.status(400).json({ error: 'Meetup não encontrado.' });
+      return res.status(400).json({ error: Messages.MessagesMeetupNotFound });
 
     const { userId } = req;
 
     if (meetup.user_id !== userId)
       return res
         .status(400)
-        .json({ error: 'Você não possui permissão para deletar este Meetup.' });
+        .json({ error: Messages.MessagesMeetupWithoutPermissionToDelete });
 
     if (isBefore(meetup.date, new Date()))
-      return res
-        .status(400)
-        .json({ error: 'Você não pode deletar Meetups que já aconteceram.' });
+      return res.status(400).json({ error: Messages.MessagesDeletePastMeetup });
 
     await meetup.destroy();
 
