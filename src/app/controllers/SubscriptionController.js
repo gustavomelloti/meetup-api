@@ -83,12 +83,12 @@ class SubscriptionController {
       meetup_id: meetup.id,
     });
 
-    const responsible = User.findByPk(meetup.user_id);
+    const responsible = await User.findByPk(meetup.user_id);
 
     await Mail.sendMail({
       to: `${responsible.name} <${responsible.email}>`,
       subject: 'Nova inscrição!',
-      html: `Olá, ${responsible.name}! Você tem mais um participante no meetup "${meetup.title}."`,
+      html: `Olá, ${responsible.name}! Você tem mais um participante no Meetup ${meetup.title}.`,
     });
 
     return res.json(subscription);
