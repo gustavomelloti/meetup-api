@@ -1,15 +1,36 @@
 import * as Yup from 'yup';
-import { isBefore, parseISO } from 'date-fns';
+import { isBefore, parseISO, startOfDay, endOfDay } from 'date-fns';
+import { Op } from 'sequelize';
+
 import Meetup from '../models/Meetup';
 import File from '../models/File';
+import User from '../models/User';
 
 class MeetupController {
   async index(req, res) {
-    // TODO
-    // Crie uma rota para listar os meetups com filtro por data (não por hora), os resultados dessa listagem devem vir paginados em 10 itens por página. Abaixo tem um exemplo de chamada para a rota de listagem dos meetups:
-    // http://localhost:3333/meetups?date=2019-07-01&page=2
-    // Nesse exemplo, listaremos a página 2 dos meetups que acontecerão no dia 01 de Julho.
-    // Nessa listagem retorne também os dados do organizador.
+    const page = req.query.page || 1;
+
+    const searchFormattedDate = req.query.date
+      ? parseISO(req.query.date)
+      : null;
+
+    const meetups = await Meetup.findAll({
+      include: [User],
+      limit: 10,
+      offset: 10 * page - 10,
+      where: req.query.date
+        ? {
+            date: {
+              [Op.between]: [
+                startOfDay(searchFormattedDate),
+                endOfDay(searchFormattedDate),
+              ],
+            },
+          }
+        : {},
+    });
+
+    return res.json(meetups);
   }
 
   async store(req, res) {
