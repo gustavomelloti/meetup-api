@@ -33,12 +33,12 @@ class SubscriptionController {
     if (!meetup)
       return res.status(400).json({ error: 'Meetup não localizado.' });
 
-    if (meetup.user_id === req.user_id)
+    if (meetup.user_id === req.userId)
       return res
         .status(400)
         .json({ error: 'Você não pode realizar a inscrição em seus Meetups.' });
 
-    if ((isBefore(meetup.date), new Date()))
+    if (isBefore(meetup.date, new Date()))
       return res.status(400).json({
         error:
           'Você não pode realizar a inscrição em Meetups que já aconteceram.',
@@ -46,7 +46,7 @@ class SubscriptionController {
 
     const checkSubscription = await Subscription.findOne({
       where: {
-        user_id: req.user_id,
+        user_id: req.userId,
         meetup_id: req.params.meetupId,
       },
     });
@@ -58,7 +58,7 @@ class SubscriptionController {
 
     const checkDate = await Subscription.findOne({
       where: {
-        user_id: req.user_id,
+        user_id: req.userId,
       },
       include: [
         {
@@ -76,7 +76,7 @@ class SubscriptionController {
     }
 
     const subscription = await Subscription.create({
-      user_id: req.user_id,
+      user_id: req.userId,
       meetup_id: meetup.id,
     });
 

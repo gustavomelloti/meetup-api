@@ -55,9 +55,9 @@ class MeetupController {
     const file = await File.findByPk(req.body.banner_id);
     if (!file) return res.status(400).json({ error: 'Banner não encontrado.' });
 
-    const meetup = Meetup.create({
+    const meetup = await Meetup.create({
       ...req.body,
-      user_id: req.user_id,
+      user_id: req.userId,
     });
 
     return res.json(meetup);
@@ -90,14 +90,14 @@ class MeetupController {
     if (!meetup)
       return res.status(400).json({ error: 'Meetup não encontrado.' });
 
-    const userId = req.user_id;
+    const { userId } = req;
 
     if (meetup.user_id !== userId)
       return res
         .status(400)
         .json({ error: 'Você não possui permissão para deletar este Meetup.' });
 
-    if ((isBefore(meetup.date), new Date()))
+    if (isBefore(meetup.date, new Date()))
       return res
         .status(400)
         .json({ error: 'Você não pode editar Meetups que já aconteceram.' });
@@ -113,19 +113,19 @@ class MeetupController {
     if (!meetup)
       return res.status(400).json({ error: 'Meetup não encontrado.' });
 
-    const userId = req.user_id;
+    const { userId } = req;
 
     if (meetup.user_id !== userId)
       return res
         .status(400)
         .json({ error: 'Você não possui permissão para deletar este Meetup.' });
 
-    if ((isBefore(meetup.date), new Date()))
+    if (isBefore(meetup.date, new Date()))
       return res
         .status(400)
         .json({ error: 'Você não pode deletar Meetups que já aconteceram.' });
 
-    await Meetup.destroy();
+    await meetup.destroy();
 
     return res.json();
   }
