@@ -3,6 +3,9 @@ import { isBefore } from 'date-fns';
 
 import Subscription from '../models/Subscription';
 import Meetup from '../models/Meetup';
+import User from '../models/User';
+
+import Mail from '../../lib/Mail';
 
 class SubscriptionController {
   async index(req, res) {
@@ -80,7 +83,13 @@ class SubscriptionController {
       meetup_id: meetup.id,
     });
 
-    // TODO: Enviar e-mail para o organizador
+    const responsible = User.findByPk(meetup.user_id);
+
+    await Mail.sendMail({
+      to: `${responsible.name} <${responsible.email}>`,
+      subject: 'Nova inscrição!',
+      html: `Olá, ${responsible.name}! Você tem mais um participante no meetup "${meetup.title}."`,
+    });
 
     return res.json(subscription);
   }
