@@ -33,6 +33,30 @@ class MeetupController {
 
     return res.json(meetup);
   }
+
+  async delete(req, res) {
+    const userId = req.user_id;
+    const meetupId = req.params.id;
+
+    const meetup = await Meetup.findByPk(meetupId);
+
+    if (!meetup)
+      return res.status(400).json({ error: 'Meetup não encontrado.' });
+
+    if (meetup.user_id !== userId)
+      return res
+        .status(400)
+        .json({ error: 'Você não possui permissão para deletar este Meetup.' });
+
+    if ((isBefore(meetup.date), new Date()))
+      return res
+        .status(400)
+        .json({ error: 'Você não pode deletar Meetups que já aconteceram.' });
+
+    await Meetup.destroy();
+
+    return res.json();
+  }
 }
 
 export default new MeetupController();
