@@ -16,7 +16,16 @@ class MeetupController {
       : null;
 
     const meetups = await Meetup.findAll({
-      include: [User],
+      include: [
+        {
+          model: User,
+          as: 'user',
+        },
+        {
+          model: File,
+          as: 'banner',
+        },
+      ],
       limit: 10,
       offset: 10 * page - 10,
       where: req.query.date

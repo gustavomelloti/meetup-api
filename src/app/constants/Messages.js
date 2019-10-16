@@ -20,4 +20,5 @@ export default {
     'Você não pode realizar a inscrição em seus Meetups.',
   MessagesSubscribeInPastMeetup:
     'Você não pode realizar a inscrição em Meetups que já aconteceram.',
+  MessagesSubscriptionsNotFound: 'Inscrição não encontrada',
 };

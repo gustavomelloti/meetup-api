@@ -44,6 +44,7 @@ routes.put('/meetups/:id', validateMeetupStore, MeetupController.update);
 routes.delete('/meetups/:id', MeetupController.delete);
 
 routes.get('/subscriptions', SubscriptionController.index);
+routes.delete('/subscriptions/:meetupId', SubscriptionController.delete);
 routes.post('/subscriptions/:meetupId', SubscriptionController.store);
 
 routes.get('/responsibles', ResponsibleController.index);

@@ -4,6 +4,7 @@ import { isBefore } from 'date-fns';
 import Subscription from '../models/Subscription';
 import Meetup from '../models/Meetup';
 import User from '../models/User';
+import File from '../models/File';
 
 import Mail from '../../lib/Mail';
 
@@ -24,6 +25,16 @@ class SubscriptionController {
           },
           model: Meetup,
           required: true,
+          include: [
+            {
+              model: File,
+              as: 'banner',
+            },
+            {
+              model: User,
+              as: 'user',
+            },
+          ],
         },
       ],
       order: [[Meetup, 'date', 'DESC']],
@@ -93,6 +104,24 @@ class SubscriptionController {
     });
 
     return res.json(subscription);
+  }
+
+  async delete(req, res) {
+    const { meetupId } = req.params;
+    const { userId } = req;
+
+    const subscription = await Subscription.findOne({
+      where: { meetup_id: meetupId, user_id: userId },
+    });
+
+    if (!subscription)
+      return res
+        .status(400)
+        .json({ error: Messages.MessagesSubscriptionsNotFound });
+
+    await subscription.destroy();
+
+    return res.json();
   }
 }
 
