@@ -8,5 +8,6 @@ Configuração do ambiente:
 Comandos para inicialização:
 
 1. yarn install
-2. yarn dev
+2. yarn sequelize-cli db:migrate
+3. yarn dev
 
